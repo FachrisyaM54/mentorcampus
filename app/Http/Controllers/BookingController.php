@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Booking;
+use App\Models\MentorSchedule;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+class BookingController extends Controller
+{
+    public function show($id)
+    {
+        $schedule = MentorSchedule::with([
+            'mentor.user',
+            'mentor.kampus'
+        ])->findOrFail($id);
+
+        $isAlreadyBooked = Booking::where('id_schedule', $id)
+            ->where('id_student', auth()->id())
+            ->where('status', '!=', 'cancelled')
+            ->exists();
+
+        return view('booking.index', compact(
+            'schedule',
+            'isAlreadyBooked'
+        ));
+    }
+
+    public function store($id)
+    {
+        $schedule = MentorSchedule::findOrFail($id);
+
+        // cek sudah dibooking
+        $alreadyBooked = Booking::where('id_schedule', $id)
+            ->where('id_student', Auth::id())
+            ->where('status', '!=', 'cancelled')
+            ->exists();
+
+        if ($alreadyBooked) {
+            return back()->with('error', 'Kamu sudah booking jadwal ini');
+        }
+
+        // cek availability
+        if ($schedule->status != 'available') {
+            return back()->with('error', 'Jadwal tidak tersedia');
+        }
+
+        DB::transaction(function () use ($schedule) {
+
+            Booking::create([
+                'id_schedule' => $schedule->id_schedule,
+                'id_student' => Auth::id(),
+                'status' => 'ongoing',
+            ]);
+
+            $schedule->update([
+                'status' => 'booked'
+            ]);
+
+        });
+
+        return redirect()
+            ->route('booking.show', $schedule->id_schedule)
+            ->with('success', 'Booking berhasil');
+    }
+
+    public function finish($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        $booking->status = 'completed';
+        $booking->save();
+
+        return redirect()
+            ->route('profile')
+            ->with('success', 'Session berhasil diselesaikan');
+    }
+
+    public function cancel($id)
+    {
+        $booking = Booking::findOrFail($id);
+
+        $booking->status = 'cancelled';
+        $booking->save();
+
+        if ($booking->schedule) {
+            $booking->schedule->status = 'available';
+            $booking->schedule->save();
+        }
+
+        return redirect()
+            ->route('profile.index')
+            ->with('success', 'Booking dibatalkan');
+    }
+}
