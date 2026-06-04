@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Role;
 
 class User extends Authenticatable
 {
@@ -27,9 +28,13 @@ class User extends Authenticatable
     ];
 
     // RELASI ROLE
-    public function role()
+    public function roleData()
     {
-        return $this->belongsTo(Role::class, 'id_role');
+        return $this->belongsTo(
+            Role::class,
+            'id_role',
+            'id_role'
+        );
     }
     public function mentorProfile()
     {
@@ -38,5 +43,9 @@ class User extends Authenticatable
     public function bookings()
     {
         return $this->hasMany(Booking::class, 'id_student', 'id_user');
+    }
+    public function calonMentor()
+    {
+        return $this->hasOne(CalonMentor::class, 'id_user', 'id_user');
     }
 }

@@ -1,3 +1,10 @@
+@if(session('success'))
+
+<div class="mb-6 bg-green-100 text-green-700 px-4 py-3 rounded-xl">
+    {{ session('success') }}
+</div>
+
+@endif
 @extends('layouts.app')
 @section('content')
 <div class="pt-20">
@@ -11,8 +18,9 @@
                 <div class="bg-white rounded-2xl shadow p-6 text-center">
 
                     @if($user->foto_profil)
-                        <img src="{{ asset($user->foto_profil) }}"
-                            class="w-24 h-24 mx-auto rounded-full object-cover">
+                    <img
+                        src="{{ asset('storage/'.$user->foto_profil) }}"
+                        class="w-24 h-24 mx-auto rounded-full object-cover">
                     @else
                         <div class="w-24 h-24 mx-auto rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
                             {{ strtoupper(substr($user->nama,0,1)) }}
@@ -20,7 +28,31 @@
                     @endif
 
                     <h2 class="mt-4 text-xl font-bold">
-                        {{ $user->nama }}
+                        <form
+                            action="{{ route('profile.update') }}"
+                            method="POST"
+                            enctype="multipart/form-data"
+                            class="space-y-4 mt-4">
+
+                            @csrf
+
+                            <input
+                                type="text"
+                                name="nama"
+                                value="{{ $user->nama }}"
+                                class="w-full border rounded-lg px-3 py-2">
+
+                            <input
+                                type="file"
+                                name="foto_profil"
+                                class="w-full text-sm">
+
+                            <button
+                                class="w-full bg-blue-600 text-white py-2 rounded-lg">
+                                Simpan Perubahan
+                            </button>
+
+                        </form>
                     </h2>
 
                     <p class="text-gray-500">
@@ -135,6 +167,94 @@
                         </p>
 
                     @endforelse
+
+                    <div class="bg-white rounded-2xl shadow p-6 mt-6">
+
+                        <h2 class="text-xl font-bold mb-5">
+                            Completed Sessions
+                        </h2>
+
+                        @forelse($completedBookings as $booking)
+
+                            <div class="border rounded-xl p-4 mb-3">
+
+                                <div class="flex justify-between items-center">
+
+                                    <div>
+                                        <h3 class="font-bold">
+                                            {{ $booking->schedule?->mentor?->user?->nama }}
+                                        </h3>
+
+                                        <p class="text-sm text-gray-500">
+                                            {{ \Carbon\Carbon::parse($booking->schedule->tanggal)->format('d M Y') }}
+                                            •
+                                            {{ \Carbon\Carbon::parse($booking->schedule->jam)->format('H:i') }}
+                                        </p>
+
+                                        <span class="text-green-600 text-sm">
+                                            Completed
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        @if($booking->review)
+
+                                            <a href="{{ route('rating.create', $booking->id_booking) }}"
+                                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-xs font-bold">
+                                                Update Rating
+                                            </a>
+
+                                        @else
+
+                                            <a href="{{ route('rating.create', $booking->id_booking) }}"
+                                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold">
+                                                Beri Rating
+                                            </a>
+
+                                        @endif
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        @empty
+
+                            <p class="text-gray-500">
+                                Belum ada sesi selesai.
+                            </p>
+
+                        @endforelse
+
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow p-6 mt-6">
+
+                        <h2 class="text-xl font-bold mb-5">
+                            Cancelled Sessions
+                        </h2>
+
+                        @forelse($cancelledBookings as $booking)
+
+                            <div class="border rounded-xl p-4 mb-3">
+                                <h3 class="font-bold">
+                                    {{ $booking->schedule?->mentor?->user?->nama }}
+                                </h3>
+
+                                <span class="text-red-600 text-sm">
+                                    Cancelled
+                                </span>
+                            </div>
+
+                        @empty
+
+                            <p class="text-gray-500">
+                                Belum ada sesi dibatalkan.
+                            </p>
+
+                        @endforelse
+
+                    </div>
 
                 </div>
 

@@ -30,4 +30,12 @@ class Booking extends Model
     {
         return $this->belongsTo(User::class, 'id_student', 'id_user');
     }
+    public function review()
+{
+    return $this->hasOne(
+        TransaksiReview::class,
+        'id_booking',
+        'id_booking'
+    );
+}
 }

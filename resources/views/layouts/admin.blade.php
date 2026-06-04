@@ -21,13 +21,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <style>
         body {
-            font-family: 'Lexend', sans-serif,Plus_Jakarta_Sans;
+            font-family: 'Lexend', sans-serif;
         }
     </style>
 
@@ -36,7 +32,7 @@
 <body class="bg-gray-100">
 
     {{-- NAVBAR --}}
-    @extends('components.navbar')
+    @extends('components.admin-navbar')
     
     {{ $slot ?? '' }}
     @yield('content')

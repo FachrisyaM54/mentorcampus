@@ -83,7 +83,14 @@
 
             {{-- DETAIL BOOKING --}}
             <div>
+                <div class="py-2">
+                    <a href="{{ route('courses.index') }}"
+                       class="text-gray-400 hover:text-[#175BAF] font-medium transition py-2">
 
+                        ← Kembali ke Daftar Mentor
+
+                    </a>
+                </div>
                 <h2 class="text-2xl font-bold text-[#175BAF] mb-6">
                     Detail Booking
                 </h2>
@@ -120,7 +127,7 @@
 
                     <div>
                         <p class="text-sm text-gray-400">Harga</p>
-                        <p class="font-semibold text-[#175BAF]">
+                        <p class="font-semibold text-[#175BAF] pb-5">
                             Rp {{ number_format($schedule->harga, 0, ',', '.') }}
                         </p>
                     </div>
@@ -147,20 +154,26 @@
                 {{-- BUTTON --}}
                 @if(!$isAlreadyBooked && $schedule->status == 'available')
 
-                    <form action="{{ route('booking.store', $schedule->id_schedule) }}"
-                          method="POST"
-                          class="mt-8">
+                    @if($isOwnMentor)
 
-                        @csrf
-
-                        <button type="submit"
-                            class="w-full bg-[#175BAF] text-white py-3 rounded-xl hover:bg-blue-700 transition">
-
-                            Book Sekarang
-
+                        <button disabled type="submit" class="w-full bg-gray-400 text-white py-3 rounded-xl cursor-not-allowed transition">
+                            Ini Jadwal Milik Anda
                         </button>
 
-                    </form>
+                    @elseif($isAlreadyBooked)
+
+                        <button disabled class="w-full bg-gray-400 text-white py-3 rounded-xl">
+                            Sudah Dibooking
+                        </button>
+
+                    @else
+
+                        {{-- tombol booking normal --}}
+
+                        <button type="submit" class="w-full bg-[#175BAF] text-white py-3 rounded-xl hover:bg-blue-700 transition">
+                        Book Sekarang </button>
+
+                    @endif
 
                 @endif
 

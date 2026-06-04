@@ -53,89 +53,39 @@
 
     {{-- MENU --}}
     <ul class="flex items-center gap-8 text-sm font-medium text-gray-600">
-    @if($user->role != 'admin')
+
         <li>
-            <a href="{{ route('dashboard') }}"
-               class="{{ $currentRoute == 'dashboard' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                Home
+            <a href="{{ route('admin.dashboard') }}"
+               class="{{ $currentRoute == 'admin.dashboard' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
+                Dashboard
             </a>
         </li>
 
         <li>
-            <a href="{{ route('courses.index') }}"
-               class="{{ $currentRoute == 'courses.index' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                Courses
+            <a href="{{ route('admin.mentor.requests') }}"
+               class="{{ $currentRoute == 'admin.mentor.requests' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
+                Approval Mentor
             </a>
         </li>
 
         <li>
-            <a href="{{ route('about') }}"
-               class="{{ $currentRoute == 'about' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                About Us
+            <a href="{{ route('admin.users') }}"
+               class="{{ $currentRoute == 'admin.users' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
+                Users
             </a>
         </li>
 
         <li>
-            <a href="{{ route('faq') }}"
-               class="{{ $currentRoute == 'faq' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                FAQ
+            <a href="{{ route('admin.mentors') }}"
+               class="{{ $currentRoute == 'admin.mentors' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
+                Mentor
             </a>
         </li>
 
-        <li>
-            <a href="{{ route('profile.index') }}"
-               class="{{ $currentRoute == 'profile.index' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                Profile
-            </a>
-        </li>
-        @endif
-
-        {{-- MENU KHUSUS MENTOR --}}
-        @if($user->role == 'mentor')
-            <li>
-                <a href="{{ route('mentor.dashboard') }}"
-                class="{{ $currentRoute == 'mentor.dashboard' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                    Dashboard
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('mentor.schedule') }}"
-                   class="{{ $currentRoute == 'mentor.schedule' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                    Schedule
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('mentor.bookings') }}"
-                   class="{{ $currentRoute == 'mentor.bookings' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                    Booking
-                </a>
-            </li>
-
-            <li>
-                <a href="{{ route('mentor.history') }}"
-                   class="{{ $currentRoute == 'mentor.history' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
-                    History
-                </a>
-            </li>
-
-        @endif
-        
     </ul>
 
     {{-- RIGHT AREA --}}
     <div class="flex items-center gap-4 relative" id="profileArea">
-
-        {{-- BUTTON BECOME MENTOR --}}
-        @if($user->role == 'student')
-
-                <a href="{{ route('mentor.register') }}"
-                class="bg-[#175BAF] text-white px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition">
-                    Become Mentor
-                </a>
-
-        @endif
 
         {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST">
@@ -193,28 +143,6 @@
                     Kelola Profil
 
                 </a>
-
-                @if($user->calonMentor || $user->role == 'student')
-
-                    <a href="{{ route('mentor.status') }}"
-                    class="menu-item">
-
-                        <svg class="w-4 h-4 mr-3 opacity-50"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 12l2 2 4-4m5-2a9 9 0 11-18 0 9 9 0 0118 0z">
-                            </path>
-                        </svg>
-
-                        Mentor Status
-
-                    </a>
-
-                @endif
 
                 <div class="border-t border-gray-100 my-1"></div>
 

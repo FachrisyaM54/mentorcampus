@@ -1,16 +1,15 @@
 @extends('layouts.app')
-
 @section('content')
 
-<div class="pt-24 max-w-5xl mx-auto">
+<div class="pt-24 max-w-6xl mx-auto">
 
     <div class="bg-white rounded-2xl shadow p-6">
 
         <h1 class="text-2xl font-bold mb-6">
-            Session History
+            Student Bookings
         </h1>
 
-        @forelse($histories as $booking)
+        @forelse($bookings as $booking)
 
             <div class="border rounded-xl p-4 mb-4">
 
@@ -22,19 +21,29 @@
                             {{ $booking->student?->nama }}
                         </h3>
 
-                        <p class="text-sm text-gray-500">
-                            {{ $booking->schedule?->tanggal }}
+                        <p class="text-gray-500">
+                            {{ $booking->student?->email }}
                         </p>
 
-                        <p class="text-sm text-gray-500">
-                            {{ $booking->schedule?->jam }}
+                        <p class="text-sm mt-2">
+                            {{ $booking->schedule->tanggal }}
+                        </p>
+
+                        <p class="text-sm">
+                            {{ $booking->schedule->jam }}
                         </p>
 
                     </div>
 
                     <div>
 
-                        @if($booking->status == 'completed')
+                        @if($booking->status == 'ongoing')
+
+                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
+                                Ongoing
+                            </span>
+
+                        @elseif($booking->status == 'completed')
 
                             <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
                                 Completed
@@ -56,8 +65,8 @@
 
         @empty
 
-            <p class="text-gray-500">
-                Belum ada riwayat sesi.
+            <p>
+                Belum ada booking.
             </p>
 
         @endforelse

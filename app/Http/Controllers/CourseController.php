@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\MentorSchedule;
+use App\Models\TransaksiReview;
 use App\Models\Kampus;
 
 class CourseController extends Controller
@@ -15,13 +16,19 @@ class CourseController extends Controller
         $kampus = $request->kampus;
         $semester = $request->semester;
         $gender = $request->gender;
+        $rating = $request->rating;
 
         $query = MentorSchedule::with([
             'mentor.user',
-            'mentor.kampus'
+            'mentor.kampus',
+            'bookings.review'
         ])
+        ->whereHas('mentor')
         ->where('status', 'available')
         ->where('harga', '>', 0);
+
+        //AVG rating
+        
 
         // SEARCH
         if ($search) {
@@ -65,12 +72,49 @@ class CourseController extends Controller
             ->orderBy('tanggal')
             ->orderBy('jam')
             ->paginate(10);
+            
+        foreach ($mentors as $mentorSchedule) {
+
+            if (!$mentorSchedule->mentor) {
+                continue;
+            }
+
+            $mentor = $mentorSchedule->mentor;
+
+            $reviews = \App\Models\TransaksiReview::whereHas(
+                'booking.schedule',
+                function ($q) use ($mentor) {
+                    $q->where('id_mentor', $mentor->id_mentor);
+                }
+            );
+
+            $mentor->avg_rating = round(
+                $reviews->avg('rating') ?? 0,
+                1
+            );
+
+            $mentor->total_review = $reviews->count();
+        }
+
+        if ($rating) {
+
+            $filtered = $mentors->getCollection()->filter(
+                function ($schedule) use ($rating) {
+
+                    return ($schedule->mentor->avg_rating >= $rating);
+
+                }
+            );
+
+            $mentors->setCollection($filtered);
+
+        }
 
         $kampusList = Kampus::orderBy('nama_kampus')->get();
 
         return view('courses.index', compact(
             'mentors',
-            'kampusList'
+            'kampusList',
         ));
     }
 }

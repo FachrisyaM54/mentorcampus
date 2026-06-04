@@ -10,12 +10,20 @@ class MentorProfile extends Model
 
     protected $primaryKey = 'id_mentor';
 
+    public $timestamps = false;
+
     protected $fillable = [
-        'id_user',
-        'id_kampus',
-        'jurusan',
-        'spesialisasi'
-    ];
+    'id_user',
+    'id_kampus',
+    'spesialisasi',
+    'file_transkrip',
+    'biografi',
+    'fakultas',
+    'jurusan',
+    'usia',
+    'pengalaman',
+    'cv'
+];
 
     /*
     |--------------------------------------------------------------------------
@@ -53,7 +61,7 @@ class MentorProfile extends Model
     */
     public function schedules()
     {
-        return $this->hasMany(MentorSchedule::class, 'id_mentor');
+        return $this->hasMany(MentorSchedule::class, 'id_mentor', 'id_mentor');
     }
 
     public function mentor()

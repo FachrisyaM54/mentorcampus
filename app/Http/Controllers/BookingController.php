@@ -16,6 +16,12 @@ class BookingController extends Controller
             'mentor.user',
             'mentor.kampus'
         ])->findOrFail($id);
+//mentor tidak bisa booking diri sendiri
+        $isOwnMentor = false;
+
+        if ($schedule->mentor && $schedule->mentor->id_user == auth()->id()) {
+            $isOwnMentor = true;
+        }
 
         $isAlreadyBooked = Booking::where('id_schedule', $id)
             ->where('id_student', auth()->id())
@@ -24,13 +30,25 @@ class BookingController extends Controller
 
         return view('booking.index', compact(
             'schedule',
-            'isAlreadyBooked'
+            'isAlreadyBooked',
+            'isOwnMentor'
         ));
     }
 
     public function store($id)
     {
         $schedule = MentorSchedule::findOrFail($id);
+        
+        //cek apakah sama dengan dirinya sendiri
+        if (
+            $schedule->mentor &&
+            $schedule->mentor->id_user == Auth::id()
+        ) {
+            return back()->with(
+                'error',
+                'Kamu tidak bisa booking mentor milik sendiri'
+            );
+        }
 
         // cek sudah dibooking
         $alreadyBooked = Booking::where('id_schedule', $id)
@@ -74,7 +92,7 @@ class BookingController extends Controller
         $booking->save();
 
         return redirect()
-            ->route('profile')
+            ->route('profile.index')
             ->with('success', 'Session berhasil diselesaikan');
     }
 

@@ -139,28 +139,30 @@
                             </p>
 
                             {{-- RATING --}}
-                            @if (!empty($mentor->avg_rating))
+                            @if($mentor->mentor->avg_rating > 0)
 
-                                <span class="text-yellow-500 font-semibold">
-                                    ⭐ {{ number_format($mentor->avg_rating, 1) }}
-                                </span>
+<div class="mt-1">
+    <span class="text-yellow-500 font-semibold">
+        ⭐ {{ $mentor->mentor->avg_rating }}
+    </span>
 
-                                <span class="text-gray-500 text-xs">
-                                    ({{ $mentor->total_review }} review)
-                                </span>
+    <span class="text-gray-500 text-sm">
+        ({{ $mentor->mentor->total_review }} review)
+    </span>
+</div>
 
-                            @else
+@else
 
-                                <span class="text-gray-400 text-sm">
-                                    Belum ada rating
-                                </span>
+<div class="mt-1 text-gray-400 text-sm">
+    Belum ada rating
+</div>
 
-                            @endif
+@endif
 
                             {{-- BUTTON --}}
                             <div class="flex gap-2 mt-3">
 
-                                <a href="#"
+                                <a href="{{ route('mentor.show', $mentor->id_mentor) }}"
                                    class="bg-gray-100 text-gray-700 px-5 py-2 rounded-xl text-sm font-semibold hover:bg-gray-200 transition">
 
                                     Detail
@@ -292,7 +294,7 @@
                 </div>
 
                 {{-- GENDER --}}
-                <div class="mb-6">
+                <div class="mb-4">
 
                     <label class="text-sm font-medium text-gray-700">
                         Gender
@@ -319,6 +321,21 @@
 
                 </div>
 
+                {{-- RATING --}}
+                <div class="mb-6">
+
+                    <label class="text-sm font-medium text-gray-700">
+                        Rating
+                    </label>
+                    <select name="rating"
+                        class="w-full border rounded-lg px-3 py-2 text-sm mt-1 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="">All Rating</option>
+                        <option value="4" {{ request('rating') == '4' ? 'selected' : '' }}>⭐ 4+ Rating</option>
+                        <option value="4.5" {{ request('rating') == '4.5' ? 'selected' : '' }}>⭐ 4.5+ Rating</option>
+                        <option value="5" {{ request('rating') == '5' ? 'selected' : '' }}>⭐ 5 Rating</option>
+
+                    </select>
+                </div>
                 {{-- BUTTON --}}
                 <button type="submit"
                         class="w-full bg-[#175BAF] text-white py-2.5 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-700 transition">
@@ -334,6 +351,7 @@
                     || request('kampus')
                     || request('semester')
                     || request('gender')
+                    || request('rating')
                 )
 
                     <a href="{{ route('courses.index') }}"
