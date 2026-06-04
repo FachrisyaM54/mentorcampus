@@ -1,59 +1,164 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Itu sebenarnya sudah **benar** kalau `.env` dan `node_modules` tidak ikut ke Git.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Dan jawabannya: **ya, tetap aman dan memang tidak seharusnya di-push ke GitHub.**
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 1. Kenapa `.env` dan `node_modules` tidak ikut di-push?
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Laravel (dan Git pada umumnya) memang **sengaja mengecualikan**:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### ❌ `.env`
 
-## Learning Laravel
+* Berisi data sensitif:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+  * database password
+  * APP_KEY
+  * API key
+* Setiap developer **harus punya sendiri**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### ❌ `node_modules`
 
-## Laravel Sponsors
+* Ukurannya besar banget
+* Bisa di-install ulang dengan `npm install`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 2. Jadi bagaimana tim lain menjalankan project?
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Tim kamu **tidak perlu file itu dari GitHub**, mereka tinggal setup ulang.
 
-## Contributing
+### 🔥 Step standar menjalankan Laravel project dari repo:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone <repo-kamu>
+cd nama-project
+```
 
-## Code of Conduct
+### 1. Install dependency PHP
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer install
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Install dependency frontend
 
-## License
+```bash
+npm install
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+### 3. Buat file `.env`
+
+```bash
+cp .env.example .env
+```
+
+Lalu edit isi `.env`:
+
+* DB_DATABASE
+* DB_USERNAME
+* DB_PASSWORD
+* APP_URL
+
+---
+
+### 4. Generate APP KEY
+
+```bash
+php artisan key:generate
+```
+
+---
+
+### 5. Jalankan migration (kalau ada database)
+
+```bash
+php artisan migrate
+```
+
+---
+
+### 6. Build frontend (kalau pakai Vite / Laravel Mix)
+
+```bash
+npm run dev
+```
+
+atau production:
+
+```bash
+npm run build
+```
+
+---
+
+### 7. Jalankan project
+
+```bash
+php artisan serve
+```
+
+---
+
+## 3. Jadi kesimpulannya
+
+* ❌ `.env` tidak perlu dan **tidak boleh dipush**
+* ❌ `node_modules` juga tidak perlu
+* ✅ Semua bisa di-recreate dengan:
+
+  * `composer install`
+  * `npm install`
+  * `.env.example`
+
+---
+
+## 4. Yang penting kamu pastikan di GitHub:
+
+Pastikan ini ada:
+
+### ✔ `.env.example`
+
+Laravel biasanya sudah ada, tapi pastikan update
+
+### ✔ `composer.json` & `composer.lock`
+
+### ✔ `package.json` & `package-lock.json`
+
+### ✔ folder penting:
+
+* app/
+* routes/
+* database/
+* resources/
+
+---
+
+## 5. Tips penting (biar tim kamu tidak error)
+
+Tambahkan di README.md:
+
+```md
+## Setup Project
+
+1. composer install
+2. npm install
+3. cp .env.example .env
+4. php artisan key:generate
+5. php artisan migrate
+6. npm run dev
+7. php artisan serve
+```
+
+---
+
+Kalau kamu mau, aku bisa bantu:
+
+* cek struktur repo kamu sudah aman atau belum
+* atau bikin README.md siap pakai untuk tim kamu
+* atau bantu fix kalau nanti ada error “APP_KEY missing / page expired / route error”
+
+Tinggal kirim saja 👍
