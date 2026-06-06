@@ -74,37 +74,103 @@ class AdminController extends Controller
     }
     //dashboard admin
     public function dashboard()
-    {
-        $totalUser = User::count();
+{
+    $totalUser = User::count();
 
-        $totalMentor = MentorProfile::count();
+    $totalMentor = MentorProfile::count();
 
-        $totalBooking = Booking::count();
+    $totalBooking = Booking::count();
 
-        $pendingMentor = CalonMentor::where(
-            'status',
-            'pending'
-        )->count();
+    $pendingMentor = CalonMentor::where(
+        'status',
+        'pending'
+    )->count();
 
-        $latestBookings = Booking::with([
-            'student',
-            'schedule'
-        ])
-        ->latest('id_booking')
-        ->take(10)
-        ->get();
+    $latestBookings = Booking::with([
+        'student',
+        'schedule'
+    ])
+    ->latest('id_booking')
+    ->take(10)
+    ->get();
 
-        return view(
-            'admin.dashboard',
-            compact(
-                'totalUser',
-                'totalMentor',
-                'totalBooking',
-                'pendingMentor',
-                'latestBookings'
-            )
-        );
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | Grafik Distribusi User
+    |--------------------------------------------------------------------------
+    */
+
+    $studentCount = User::where(
+        'role',
+        'student'
+    )->count();
+
+    $mentorCount = User::where(
+        'role',
+        'mentor'
+    )->count();
+
+    $adminCount = User::where(
+        'role',
+        'admin'
+    )->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Grafik Status Booking
+    |--------------------------------------------------------------------------
+    */
+
+    $completedBooking = Booking::where(
+        'status',
+        'completed'
+    )->count();
+
+    $ongoingBooking = Booking::where(
+        'status',
+        'ongoing'
+    )->count();
+
+    $cancelledBooking = Booking::where(
+        'status',
+        'cancelled'
+    )->count();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Grafik Booking per Bulan
+    |--------------------------------------------------------------------------
+    */
+
+    $bookingPerMonth = Booking::selectRaw(
+        'MONTH(created_at) as month,
+         COUNT(*) as total'
+    )
+    ->groupBy('month')
+    ->orderBy('month')
+    ->get();
+
+    return view(
+        'admin.dashboard',
+        compact(
+            'totalUser',
+            'totalMentor',
+            'totalBooking',
+            'pendingMentor',
+            'latestBookings',
+
+            'studentCount',
+            'mentorCount',
+            'adminCount',
+
+            'completedBooking',
+            'ongoingBooking',
+            'cancelledBooking',
+
+            'bookingPerMonth'
+        )
+    );
+}
     //Untuk melihat semua user oleh admin
     public function users()
     {

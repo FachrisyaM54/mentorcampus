@@ -97,19 +97,29 @@ class BookingController extends Controller
     }
 
     public function cancel($id)
-    {
+{
+    DB::transaction(function () use ($id) {
+
         $booking = Booking::findOrFail($id);
 
-        $booking->status = 'cancelled';
-        $booking->save();
+        $booking->update([
+            'status' => 'cancelled'
+        ]);
 
         if ($booking->schedule) {
-            $booking->schedule->status = 'available';
-            $booking->schedule->save();
+
+            $booking->schedule->update([
+                'status' => 'available'
+            ]);
         }
 
-        return redirect()
-            ->route('profile.index')
-            ->with('success', 'Booking dibatalkan');
-    }
+    });
+
+    return redirect()
+        ->route('profile.index')
+        ->with(
+            'success',
+            'Booking dibatalkan'
+        );
+}
 }

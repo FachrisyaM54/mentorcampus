@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <div class="pt-24 max-w-7xl mx-auto">
 
@@ -40,6 +41,36 @@
 
     </div>
 
+    <div class="grid md:grid-cols-2 gap-6 mt-8">
+
+    <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="font-bold mb-4">
+            Distribusi User
+        </h2>
+
+        <canvas id="userChart"></canvas>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow">
+        <h2 class="font-bold mb-4">
+            Status Booking
+        </h2>
+
+        <canvas id="statusChart"></canvas>
+    </div>
+
+</div>
+
+<div class="bg-white p-6 rounded-xl shadow mt-8">
+
+    <h2 class="font-bold mb-4">
+        Booking per Bulan
+    </h2>
+
+    <canvas id="bookingChart"></canvas>
+
+</div>
+
     <div class="bg-white rounded-xl shadow p-6 mt-8">
 
         <h2 class="text-xl font-bold mb-4">
@@ -69,5 +100,79 @@
     </div>
 
 </div>
+<script>
 
+const userChart = new Chart(
+    document.getElementById('userChart'),
+    {
+        type: 'pie',
+        data: {
+            labels: [
+                'Student',
+                'Mentor',
+                'Admin'
+            ],
+            datasets: [{
+                data: [
+                    {{ $studentCount }},
+                    {{ $mentorCount }},
+                    {{ $adminCount }}
+                ]
+            }]
+        }
+    }
+);
+
+const statusChart = new Chart(
+    document.getElementById('statusChart'),
+    {
+        type: 'doughnut',
+        data: {
+            labels: [
+                'Completed',
+                'Ongoing',
+                'Cancelled'
+            ],
+            datasets: [{
+                data: [
+                    {{ $completedBooking }},
+                    {{ $ongoingBooking }},
+                    {{ $cancelledBooking }}
+                ]
+            }]
+        }
+    }
+);
+
+const bookingChart = new Chart(
+    document.getElementById('bookingChart'),
+    {
+        type: 'bar',
+        data: {
+            labels: [
+                @foreach($bookingPerMonth as $item)
+                    'Bulan {{ $item->month }}',
+                @endforeach
+            ],
+            datasets: [{
+                label: 'Jumlah Booking',
+                data: [
+                    @foreach($bookingPerMonth as $item)
+                        {{ $item->total }},
+                    @endforeach
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    }
+);
+
+</script>
 @endsection
