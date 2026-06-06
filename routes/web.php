@@ -146,6 +146,11 @@ Route::middleware(['auth','admin'])->group(function () {
         [AdminController::class, 'deleteMentor']
     )->name('admin.mentors.delete');
 
+        Route::get(
+        '/admin-report-pdf',
+        [AdminController::class, 'exportPdf']
+    )->name('admin.report.pdf');
+
 });
 
 require __DIR__.'/auth.php';

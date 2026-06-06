@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\MentorProfile;
 use App\Models\Booking;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -94,11 +95,7 @@ class AdminController extends Controller
     ->take(10)
     ->get();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Grafik Distribusi User
-    |--------------------------------------------------------------------------
-    */
+    //Grafik Distribusi User
 
     $studentCount = User::where(
         'role',
@@ -115,11 +112,7 @@ class AdminController extends Controller
         'admin'
     )->count();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Grafik Status Booking
-    |--------------------------------------------------------------------------
-    */
+ // Grafik Status Booking
 
     $completedBooking = Booking::where(
         'status',
@@ -136,11 +129,7 @@ class AdminController extends Controller
         'cancelled'
     )->count();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Grafik Booking per Bulan
-    |--------------------------------------------------------------------------
-    */
+// Grafik Booking Per Bulan
 
     $bookingPerMonth = Booking::selectRaw(
         'MONTH(created_at) as month,
@@ -241,4 +230,80 @@ class AdminController extends Controller
             'Mentor berhasil dihapus'
         );
     }
+    //EXPORT PDF
+    public function exportPdf()
+{
+    $totalUser = User::count();
+
+    $totalMentor = MentorProfile::count();
+
+    $totalBooking = Booking::count();
+
+    $pendingMentor = CalonMentor::where(
+        'status',
+        'pending'
+    )->count();
+
+    $studentCount = User::where(
+        'role',
+        'student'
+    )->count();
+
+    $mentorCount = User::where(
+        'role',
+        'mentor'
+    )->count();
+
+    $adminCount = User::where(
+        'role',
+        'admin'
+    )->count();
+
+    $completedBooking = Booking::where(
+        'status',
+        'completed'
+    )->count();
+
+    $ongoingBooking = Booking::where(
+        'status',
+        'ongoing'
+    )->count();
+
+    $cancelledBooking = Booking::where(
+        'status',
+        'cancelled'
+    )->count();
+
+    $bookingPerMonth = Booking::selectRaw(
+        'MONTH(created_at) as month,
+         COUNT(*) as total'
+    )
+    ->groupBy('month')
+    ->orderBy('month')
+    ->get();
+
+    $pdf = Pdf::loadView(
+        'admin.report-pdf',
+        compact(
+            'totalUser',
+            'totalMentor',
+            'totalBooking',
+            'pendingMentor',
+
+            'studentCount',
+            'mentorCount',
+            'adminCount',
+
+            'completedBooking',
+            'ongoingBooking',
+            'cancelledBooking',
+
+            'bookingPerMonth'
+        )
+    );
+
+    return $pdf->download(
+        'mentorcampus-report.pdf'
+    );
+}
 }

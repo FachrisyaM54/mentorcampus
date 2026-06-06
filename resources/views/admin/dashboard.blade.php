@@ -9,6 +9,17 @@
         Admin Dashboard
     </h1>
 
+    <div class="mb-6">
+
+    <a
+        href="{{ route('admin.report.pdf') }}"
+        class="bg-red-600 text-white px-4 py-2 rounded-lg"
+    >
+        Export PDF Report
+    </a>
+
+</div>
+
     <div class="grid md:grid-cols-4 gap-5">
 
         <div class="bg-white p-6 rounded-xl shadow">
