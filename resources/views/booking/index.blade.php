@@ -169,7 +169,8 @@
                     @else
 
                         {{-- tombol booking normal --}}
-
+                        <form action="{{ route('booking.store', $schedule->id_schedule) }}" method="POST">
+                            @csrf
                         <button type="submit" class="w-full bg-[#175BAF] text-white py-3 rounded-xl hover:bg-blue-700 transition">
                         Book Sekarang </button>
 

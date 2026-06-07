@@ -39,9 +39,27 @@
 
                         @if($booking->status == 'ongoing')
 
-                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
-                                Ongoing
-                            </span>
+                            <div class="flex flex-col items-end gap-2">
+
+                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs">
+                                    Ongoing
+                                </span>
+
+                                <form method="POST"
+                                    action="{{ route('booking.finish', $booking->id_booking) }}">
+                                    @csrf
+
+                                    <button
+                                        type="submit"
+                                        class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold"
+                                        onclick="return confirm('Selesaikan sesi ini?')">
+
+                                        Selesaikan Sesi
+
+                                    </button>
+                                </form>
+
+                            </div>
 
                         @elseif($booking->status == 'completed')
 

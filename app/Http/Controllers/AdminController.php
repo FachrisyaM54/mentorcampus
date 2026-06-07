@@ -63,7 +63,8 @@ class AdminController extends Controller
                 'id_user',
                 $calon->id_user
             )->update([
-                'id_role' => 3
+                'id_role' => 2,
+                'role'    => 'mentor'
             ]);
 
         });

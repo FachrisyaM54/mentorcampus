@@ -85,11 +85,21 @@ class BookingController extends Controller
     }
 
     public function finish($id)
-    {
-        $booking = Booking::findOrFail($id);
+{
+    $booking = Booking::with([
+        'schedule.mentor'
+    ])->findOrFail($id);
 
-        $booking->status = 'completed';
-        $booking->save();
+    if (
+        $booking->schedule->mentor->id_user
+        != auth()->id()
+    ) {
+        abort(403, 'Unauthorized');
+    }
+
+    $booking->status = 'completed';
+
+    $booking->save();
 
         return redirect()
             ->route('profile.index')

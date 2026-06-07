@@ -123,15 +123,6 @@
                                     
                                     <div class="flex gap-2 mt-4">
 
-                                        <form method="POST"
-                                            action="{{ route('booking.finish', $booking->id_booking) }}">
-                                            @csrf
-
-                                            <button type="submit"
-                                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold">
-                                                Selesai
-                                            </button>
-                                        </form>
 
                                         <form method="POST"
                                             action="{{ route('booking.cancel', $booking->id_booking) }}"
