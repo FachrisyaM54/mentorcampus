@@ -22,33 +22,42 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 Route::get('/courses', [CourseController::class, 'index'])
     ->name('courses.index');
 
-Route::middleware('auth')->group(function () {
+Route::get('/home', function () {
+    return view('dashboard.index'); 
+})->name('home');
 
-    Route::get('/profile/update', [ProfileController::class,'index'])
-        ->name('profile.index');
+// --- STRUKTUR ROUTE PROFILE STUDENT (SUDAH DIPERBAIKI AGAR TIDAK NOT FOUND) ---
+// Mengubah URL index dari '/profile/update' menjadi '/profile' agar serasi dengan form action
+Route::get('/profile', [ProfileController::class, 'index'])
+    ->name('profile.index');
 
-    Route::post('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+Route::post('/profile', [ProfileController::class, 'update'])
+    ->name('profile.update');
 
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+Route::patch('/profile', [ProfileController::class, 'update'])
+    ->name('profile.update');
 
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
+Route::delete('/profile', [ProfileController::class, 'destroy'])
+    ->name('profile.destroy');
 
-    Route::get('/booking/{schedule}', [BookingController::class, 'show'])
-        ->name('booking.show');
+// 💡 ROUTE BARU: Menghubungkan tombol hapus riwayat cancelled ke ProfileController@destroyCancelled
+Route::delete('/profile/cancelled/{id}', [ProfileController::class, 'destroyCancelled'])
+    ->name('profile.cancelled.destroy');
+// -------------------------------------
 
-    Route::post('/booking/{schedule}', [BookingController::class, 'store'])
-        ->name('booking.store');
+Route::get('/booking/{schedule}', [BookingController::class, 'show'])
+    ->name('booking.show');
 
-    Route::post('/booking/{id}/finish', [BookingController::class, 'finish'])
-        ->name('booking.finish');
+Route::post('/booking/{schedule}', [BookingController::class, 'store'])
+    ->name('booking.store');
 
-    Route::post('/booking/{id}/cancel', [BookingController::class, 'cancel'])
-        ->name('booking.cancel');
+Route::post('/booking/{id}/finish', [BookingController::class, 'finish'])
+    ->name('booking.finish');
 
-    Route::get(
+Route::post('/booking/{id}/cancel', [BookingController::class, 'cancel'])
+    ->name('booking.cancel');
+
+Route::get(
     '/rating/{id}',
     [RatingController::class,'create']
 )->name('rating.create');
@@ -64,50 +73,56 @@ Route::get('/faq', [FaqController::class, 'index'])
 Route::view('/about', 'about.index')->name('about');
 
 
-        //MENTORR
-    Route::get('/mentor-register', [MentorController::class, 'create'])
-        ->name('mentor.register');
+//MENTORR
+Route::get('/mentor-register', [MentorController::class, 'create'])
+    ->name('mentor.register');
 
-    Route::post('/mentor-register', [MentorController::class, 'store'])
-        ->name('mentor.store');
+Route::post('/mentor-register', [MentorController::class, 'store'])
+    ->name('mentor.store');
 
-    Route::get('/mentor-status', [MentorController::class, 'status'])
-        ->name('mentor.status');
+Route::get('/mentor-status', [MentorController::class, 'status'])
+    ->name('mentor.status');
 
-    Route::get('/mentor-schedule', [MentorScheduleController::class, 'index'])
-        ->name('mentor.schedule');
-    
-    Route::get(
-        '/mentor-schedule-create',
-        [MentorScheduleController::class, 'create']
-    )->name('mentor.schedule.create');
+// --- BAGIAN JADWAL MENTOR YANG DISESUAIKAN & DILENGKAPI ---
+Route::get('/mentor-schedule', [MentorScheduleController::class, 'index'])
+    ->name('mentor.schedule');
 
-    Route::post(
-        '/mentor-schedule-store',
-        [MentorScheduleController::class, 'store']
-    )->name('mentor.schedule.store');
+Route::get('/mentor-schedule-create', [MentorScheduleController::class, 'create'])
+    ->name('mentor.schedule.create');
 
-    Route::get(
-        '/mentor-bookings',
-        [MentorController::class, 'bookings']
-    )->name('mentor.bookings');
+Route::post('/mentor-schedule-store', [MentorScheduleController::class, 'store'])
+    ->name('mentor.schedule.store');
 
-    Route::get(
-        '/mentor-history',
-        [MentorController::class, 'history']
-    )->name('mentor.history');
+Route::delete('/mentor-schedule-delete/{id}', [MentorScheduleController::class, 'destroy'])
+    ->name('mentor.schedule.delete');
+// -----------------------------------------------------------
 
-    Route::get(
+Route::get(
+    '/mentor-bookings',
+    [MentorController::class, 'bookings']
+)->name('mentor.bookings');
+
+Route::get(
+    '/mentor-history',
+    [MentorController::class, 'history']
+)->name('mentor.history');
+
+Route::get(
     '/mentor-dashboard',
     [MentorController::class, 'dashboard']
-    )->name('mentor.dashboard');
+)->name('mentor.dashboard');
 
-    Route::get(
-        '/mentor/{id}',
-        [MentorController::class, 'show']
-    )->name('mentor.show');
-    });
-    
+// 💡 ROUTE BARU: Menyambungkan form submit dari dashboard mentor ke MentorController fungsi updateProfile
+Route::post(
+    '/mentor-dashboard/profile-update',
+    [MentorController::class, 'updateProfile']
+)->name('mentor.profile.update');
+
+Route::get(
+    '/mentor/{id}',
+    [MentorController::class, 'show']
+)->name('mentor.show');
+
 
 //ADMIN middleware
 Route::middleware(['auth','admin'])->group(function () {
@@ -141,10 +156,18 @@ Route::middleware(['auth','admin'])->group(function () {
         [AdminController::class, 'mentorDetail']
     )->name('admin.mentors.detail');
 
-        Route::delete(
+    Route::delete(
         '/admin-mentors/{id}',
         [AdminController::class, 'deleteMentor']
     )->name('admin.mentors.delete');
+
+    Route::get(
+        '/admin-report-pdf',
+        [AdminController::class, 'exportPdf']
+    )->name('admin.report.pdf');
+
+    Route::post('/admin-kampus-store', [AdminController::class, 'storeKampus'])->name('admin.kampus.store');
+    Route::delete('/admin-kampus-delete/{id}', [AdminController::class, 'deleteKampus'])->name('admin.kampus.delete');
 
 });
 

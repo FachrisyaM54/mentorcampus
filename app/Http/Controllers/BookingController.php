@@ -85,11 +85,21 @@ class BookingController extends Controller
     }
 
     public function finish($id)
-    {
-        $booking = Booking::findOrFail($id);
+{
+    $booking = Booking::with([
+        'schedule.mentor'
+    ])->findOrFail($id);
 
-        $booking->status = 'completed';
-        $booking->save();
+    if (
+        $booking->schedule->mentor->id_user
+        != auth()->id()
+    ) {
+        abort(403, 'Unauthorized');
+    }
+
+    $booking->status = 'completed';
+
+    $booking->save();
 
         return redirect()
             ->route('profile.index')
@@ -97,19 +107,29 @@ class BookingController extends Controller
     }
 
     public function cancel($id)
-    {
+{
+    DB::transaction(function () use ($id) {
+
         $booking = Booking::findOrFail($id);
 
-        $booking->status = 'cancelled';
-        $booking->save();
+        $booking->update([
+            'status' => 'cancelled'
+        ]);
 
         if ($booking->schedule) {
-            $booking->schedule->status = 'available';
-            $booking->schedule->save();
+
+            $booking->schedule->update([
+                'status' => 'available'
+            ]);
         }
 
-        return redirect()
-            ->route('profile.index')
-            ->with('success', 'Booking dibatalkan');
-    }
+    });
+
+    return redirect()
+        ->route('profile.index')
+        ->with(
+            'success',
+            'Booking dibatalkan'
+        );
+}
 }

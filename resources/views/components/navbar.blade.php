@@ -55,8 +55,9 @@
     <ul class="flex items-center gap-8 text-sm font-medium text-gray-600">
     @if($user->role != 'admin')
         <li>
-            <a href="{{ route('dashboard') }}"
-               class="{{ $currentRoute == 'dashboard' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
+            {{-- 💡 DI SINI PERBAIKANNYA: href diarahkan ke route('home') --}}
+            <a href="{{ route('home') }}"
+               class="{{ $currentRoute == 'home' ? 'text-blue-500 font-semibold' : 'hover:text-blue-500' }}">
                 Home
             </a>
         </li>
@@ -129,18 +130,15 @@
 
         {{-- BUTTON BECOME MENTOR --}}
         @if($user->role == 'student')
-
-                <a href="{{ route('mentor.register') }}"
-                class="bg-[#175BAF] text-white px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition">
-                    Become Mentor
-                </a>
-
+            <a href="{{ route('mentor.register') }}"
+            class="bg-[#175BAF] text-white px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition">
+                Become Mentor
+            </a>
         @endif
 
         {{-- LOGOUT --}}
         <form action="{{ route('logout') }}" method="POST">
             @csrf
-
             <button type="submit"
                 class="bg-[#B6DCFF] text-[#175BAF] px-4 py-2 rounded-full text-sm font-medium hover:scale-105 transition">
                 Logout
@@ -150,11 +148,9 @@
         {{-- TOGGLE --}}
         <button onclick="toggleDropdown()"
             class="w-9 h-9 flex flex-col items-center justify-center gap-1.5 hover:bg-gray-100 rounded-md transition focus:outline-none">
-
             <span class="w-5 h-0.5 bg-[#175BAF]"></span>
             <span class="w-5 h-0.5 bg-[#175BAF]"></span>
             <span class="w-5 h-0.5 bg-[#175BAF]"></span>
-
         </button>
 
         {{-- DROPDOWN --}}
@@ -162,92 +158,41 @@
              class="hidden dropdown-box absolute right-0 top-[110%] z-[60]">
 
             <div class="p-4 border-b border-gray-100 bg-gray-50/50">
-
-                <p class="text-sm font-bold text-gray-800 truncate">
-                    {{ $user->nama }}
-                </p>
-
-                <p class="text-[11px] text-gray-500 truncate">
-                    {{ $user->email }}
-                </p>
-
+                <p class="text-sm font-bold text-gray-800 truncate">{{ $user->nama }}</p>
+                <p class="text-[11px] text-gray-500 truncate">{{ $user->email }}</p>
             </div>
 
             <div class="py-1">
-
                 <a href="{{ route('profile.index') }}" class="menu-item">
-
-                    <svg class="w-4 h-4 mr-3 opacity-50"
-                         fill="none"
-                         stroke="currentColor"
-                         viewBox="0 0 24 24">
-
-                        <path stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
-                        </path>
-
+                    <svg class="w-4 h-4 mr-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
-
                     Kelola Profil
-
                 </a>
 
                 @if($user->calonMentor || $user->role == 'student')
-
-                    <a href="{{ route('mentor.status') }}"
-                    class="menu-item">
-
-                        <svg class="w-4 h-4 mr-3 opacity-50"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 12l2 2 4-4m5-2a9 9 0 11-18 0 9 9 0 0118 0z">
-                            </path>
+                    <a href="{{ route('mentor.status') }}" class="menu-item">
+                        <svg class="w-4 h-4 mr-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-
                         Mentor Status
-
                     </a>
-
                 @endif
 
                 <div class="border-t border-gray-100 my-1"></div>
 
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf
-
-                    <button type="submit"
-                        class="menu-item text-red-600 font-medium w-full text-left">
-
-                        <svg class="w-4 h-4 mr-3"
-                             fill="none"
-                             stroke="currentColor"
-                             viewBox="0 0 24 24">
-
-                            <path stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  stroke-width="2"
-                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                            </path>
-
+                    <button type="submit" class="menu-item text-red-600 font-medium w-full text-left">
+                        <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                         </svg>
-
                         Sign Out
-
                     </button>
                 </form>
-
             </div>
-
         </div>
-
     </div>
-
 </nav>
 
 <script>
@@ -257,13 +202,11 @@
     }
 
     window.addEventListener('click', function(e) {
-
         const profileArea = document.getElementById('profileArea');
         const dropdown = document.getElementById('userDropdown');
 
         if (profileArea && !profileArea.contains(e.target)) {
             dropdown.classList.add('hidden');
         }
-
     });
 </script>

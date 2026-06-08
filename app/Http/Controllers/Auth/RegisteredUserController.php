@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -49,8 +48,9 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect()->route('dashboard');
+        // PERBAIKAN TIM NIS: 
+        // 1. Baris Auth::login($user) dihapus total agar tidak otomatis login ke dashboard.
+        // 2. Redirect dipindahkan ke rute login dengan flash message sukses.
+        return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun student kamu sudah terdaftar, silakan masuk.');
     }
 }
