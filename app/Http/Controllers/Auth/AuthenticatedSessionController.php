@@ -30,15 +30,17 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
+        // Menggunakan redirect()->intended() agar jika user memiliki history halaman sebelumnya, 
+        // mereka akan dikembalikan ke sana, jika tidak ada baru masuk ke dashboard masing-masing.
         if ($user->id_role == 1) {
-            return redirect()->route('admin.dashboard');
+            return redirect()->intended(route('admin.dashboard'));
         }
 
         if ($user->id_role == 2) {
-            return redirect()->route('mentor.dashboard');
+            return redirect()->intended(route('mentor.dashboard'));
         }
 
-        return redirect()->route('dashboard');
+        return redirect()->intended(route('dashboard'));
     }
 
     /**

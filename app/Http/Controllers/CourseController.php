@@ -24,43 +24,50 @@ class CourseController extends Controller
             'bookings.review'
         ])
         ->whereHas('mentor')
-        ->where('status', 'available')
+        ->where('status', 'available') // Sudah benar menggunakan available
         ->where('harga', '>', 0);
 
-        //AVG rating
-        
-
-        // SEARCH
+        // GLOBAL SEARCH (Bisa cari Nama, Skill, atau Kampus sekaligus)
         if ($search) {
-            $query->whereHas('mentor.user', function ($q) use ($search) {
-                $q->where('nama', 'like', "%$search%");
+            $query->where(function ($mainQuery) use ($search) {
+                // Cari berdasarkan Nama Mentor
+                $mainQuery->whereHas('mentor.user', function ($q) use ($search) {
+                    $q->where('nama', 'like', "%$search%");
+                })
+                // ATAU cari berdasarkan Spesialisasi / Skill
+                ->orWhereHas('mentor', function ($q) use ($search) {
+                    $q->where('spesialisasi', 'like', "%$search%");
+                })
+                // ATAU cari berdasarkan Nama Kampus
+                ->orWhereHas('mentor.kampus', function ($q) use ($search) {
+                    $q->where('nama_kampus', 'like', "%$search%");
+                });
             });
         }
 
-        // SUBJECT
+        // SIDEBAR FILTER: SUBJECT
         if ($subject) {
             $query->whereHas('mentor', function ($q) use ($subject) {
                 $q->where('spesialisasi', 'like', "%$subject%");
             });
         }
 
-        // KAMPUS
+        // SIDEBAR FILTER: KAMPUS
         if ($kampus) {
             $query->whereHas('mentor.kampus', function ($q) use ($kampus) {
                 $q->where('nama_kampus', $kampus);
             });
         }
 
-        // GENDER
+        // SIDEBAR FILTER: GENDER
         if ($gender) {
             $query->whereHas('mentor.user', function ($q) use ($gender) {
                 $q->where('gender', $gender);
             });
         }
 
-        // SEMESTER
+        // SIDEBAR FILTER: SEMESTER
         if ($semester) {
-
             [$min, $max] = explode('-', $semester);
 
             $query->whereHas('mentor.user', function ($q) use ($min, $max) {
@@ -97,17 +104,13 @@ class CourseController extends Controller
         }
 
         if ($rating) {
-
             $filtered = $mentors->getCollection()->filter(
                 function ($schedule) use ($rating) {
-
                     return ($schedule->mentor->avg_rating >= $rating);
-
                 }
             );
 
             $mentors->setCollection($filtered);
-
         }
 
         $kampusList = Kampus::orderBy('nama_kampus')->get();
